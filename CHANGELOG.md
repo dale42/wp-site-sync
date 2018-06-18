@@ -1,6 +1,8 @@
 # Change Log
 
-## V0.1.x-dev
+## V0.x-dev
+
+## V0.1.1
 - Added README.md file
 - Added CHANGELOg.md file
 
