@@ -8,7 +8,7 @@
 #
 
 # Script Version
-VERSION=0.1.x-dev
+VERSION=0.1.1
 
 # Required Configuration parameters
 config_params=('name' 'remote_host' 'remote_port' 'remote_wp_dir' 'remote_backup_dir' 'remote_url' 'remote_type' 'local_wp_dir' 'local_backup_dir' 'local_url' 'local_type' 'date_stamp' 'backup_file_id')
