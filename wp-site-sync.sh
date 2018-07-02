@@ -86,9 +86,17 @@ function do_sync {
 
   echo "   - Backing up WordPress database on $remote_host"
   ssh -p $remote_port $remote_host "cd $remote_wp_dir; wp db export - | gzip > $remote_backup_dir/$backup_file"
+  if [ $? -ne 0 ]; then
+    echo "     ERROR: Could not backup remote database"
+    return 1
+  fi
 
   echo "   - Copying backup file to local directory $local_backup_dir"
   scp -P $remote_port $remote_host:$remote_backup_dir/$backup_file $local_backup_dir/.
+  if [ $? -ne 0 ]; then
+    echo "     ERROR: Could not backup remote backup to local"
+    return 1
+  fi
 
   echo "   - Creating a safety backup of $local_type"
   cd $local_wp_dir
@@ -108,6 +116,10 @@ function do_sync {
   echo "   - rsyncing files"
   RSYNC_COMMAND="rsync --progress -vrae 'ssh -p $remote_port' $remote_host:$remote_wp_dir/wp-content/uploads/ $local_wp_dir/wp-content/uploads"
   eval $RSYNC_COMMAND
+  if [ $? -ne 0 ]; then
+    echo "     ERROR: Could not synchronize local file system"
+    return 1
+  fi
 }
 
 
