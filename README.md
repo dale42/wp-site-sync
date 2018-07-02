@@ -79,7 +79,6 @@ date_stamp=`date +"%Y-%m-%d-%k%M"`
 
 ## To-Do / Wishlist / Roadmap
 
-- Check return codes (I did say it wasn't production :smile: )
 - Better document the site configuration file
 - Test if the remote backup directory exists
 - Site configuration file creation assistance
@@ -94,3 +93,4 @@ date_stamp=`date +"%Y-%m-%d-%k%M"`
 - Automatically create ~/.wp-site-sync directory if it doesn't exist
 - Update *wp search-replace* to use the --all-tables parameter (or be smarter about adding additional tables)
 - Detect problematic plugins and provide warnings of additional actions required (e.g. Elementor requires regeneration of files via UI tool)
+- Find a way to test if wp-cli commands completed properly (they always return success, it seems)
