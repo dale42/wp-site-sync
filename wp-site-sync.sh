@@ -13,6 +13,8 @@ VERSION=0.1.x-dev
 # Required Configuration parameters
 config_params=('name' 'remote_host' 'remote_port' 'remote_wp_dir' 'remote_backup_dir' 'remote_url' 'remote_type' 'local_wp_dir' 'local_backup_dir' 'local_url' 'local_type' 'date_stamp' 'backup_file_id')
 
+# Constants
+sites_directory=~/.wp-site-sync
 
 #
 # print_help
@@ -35,7 +37,7 @@ function print_help {
 # the required parameters.
 #
 function test_configuration_file {
-  filename=~/.wp-sync-util/$1
+  filename=$sites_directory/$1
 
   # file exists and is readable
   if [ ! -r $filename ]
@@ -70,7 +72,7 @@ function test_configuration_file {
 #
 function do_sync {
   echo "   Using sync file $1"
-  filename=~/.wp-sync-util/$1
+  filename=$sites_directory/$1
   source $filename
 
   if [ "$backup_file_id" = "" ]
@@ -120,9 +122,9 @@ echo "wp-site-sync v$VERSION"
 #
 # Verify configuration
 #
-if [ ! -d ~/.wp-sync-util/ ]
+if [ ! -d $sites_directory ]
 then
-  echo "   ERROR: Configuration directory ~/.wp-sync-util/ not found"
+  echo "   ERROR: Configuration directory $sites_directory not found"
   echo ""
   exit 1
 fi
@@ -161,7 +163,7 @@ then
   # List Sync files
   #
   echo "Available sync configurations:"
-  ls -1 ~/.wp-sync-util/
+  ls -1 $sites_directory
   echo ""
 
 else
