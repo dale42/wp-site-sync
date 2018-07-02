@@ -4,6 +4,7 @@
 - Make configuration directory a constant
 - Change configuration directory from ~/.wp-sync-util to ~/.wp-site-sync
 - Add return code checking for ssh, scp and rsync commands
+- Add code to remove the remote backup file after it's copied locally
 
 ## V0.1.1
 - Added README.md file

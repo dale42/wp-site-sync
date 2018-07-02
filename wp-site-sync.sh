@@ -98,6 +98,13 @@ function do_sync {
     return 1
   fi
 
+  echo "   - Deleting backup file $backup_file on $remote_host"
+  ssh -p $remote_port $remote_host "\rm -v $remote_backup_dir/$backup_file"
+  if [ $? -ne 0 ]; then
+    echo "     ERROR: Could not delete remote database backup"
+    return 1
+  fi
+
   echo "   - Creating a safety backup of $local_type"
   cd $local_wp_dir
   wp db export - | gzip > $local_backup_dir/$name-$local_type-$date_stamp.sql.gz
