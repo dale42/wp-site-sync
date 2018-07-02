@@ -1,6 +1,8 @@
 # Change Log
 
 ## V0.x-dev
+
+## V0.1.2
 - Make configuration directory a constant
 - Change configuration directory from ~/.wp-sync-util to ~/.wp-site-sync
 - Add return code checking for ssh, scp and rsync commands
