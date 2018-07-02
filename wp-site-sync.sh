@@ -8,11 +8,13 @@
 #
 
 # Script Version
-VERSION=0.1.1
+VERSION=0.1.2
 
 # Required Configuration parameters
 config_params=('name' 'remote_host' 'remote_port' 'remote_wp_dir' 'remote_backup_dir' 'remote_url' 'remote_type' 'local_wp_dir' 'local_backup_dir' 'local_url' 'local_type' 'date_stamp' 'backup_file_id')
 
+# Constants
+sites_directory=~/.wp-site-sync
 
 #
 # print_help
@@ -35,7 +37,7 @@ function print_help {
 # the required parameters.
 #
 function test_configuration_file {
-  filename=~/.wp-sync-util/$1
+  filename=$sites_directory/$1
 
   # file exists and is readable
   if [ ! -r $filename ]
@@ -70,7 +72,7 @@ function test_configuration_file {
 #
 function do_sync {
   echo "   Using sync file $1"
-  filename=~/.wp-sync-util/$1
+  filename=$sites_directory/$1
   source $filename
 
   if [ "$backup_file_id" = "" ]
@@ -84,9 +86,24 @@ function do_sync {
 
   echo "   - Backing up WordPress database on $remote_host"
   ssh -p $remote_port $remote_host "cd $remote_wp_dir; wp db export - | gzip > $remote_backup_dir/$backup_file"
+  if [ $? -ne 0 ]; then
+    echo "     ERROR: Could not backup remote database"
+    return 1
+  fi
 
   echo "   - Copying backup file to local directory $local_backup_dir"
   scp -P $remote_port $remote_host:$remote_backup_dir/$backup_file $local_backup_dir/.
+  if [ $? -ne 0 ]; then
+    echo "     ERROR: Could not backup remote backup to local"
+    return 1
+  fi
+
+  echo "   - Deleting backup file $backup_file on $remote_host"
+  ssh -p $remote_port $remote_host "\rm -v $remote_backup_dir/$backup_file"
+  if [ $? -ne 0 ]; then
+    echo "     ERROR: Could not delete remote database backup"
+    return 1
+  fi
 
   echo "   - Creating a safety backup of $local_type"
   cd $local_wp_dir
@@ -106,6 +123,10 @@ function do_sync {
   echo "   - rsyncing files"
   RSYNC_COMMAND="rsync --progress -vrae 'ssh -p $remote_port' $remote_host:$remote_wp_dir/wp-content/uploads/ $local_wp_dir/wp-content/uploads"
   eval $RSYNC_COMMAND
+  if [ $? -ne 0 ]; then
+    echo "     ERROR: Could not synchronize local file system"
+    return 1
+  fi
 }
 
 
@@ -120,9 +141,9 @@ echo "wp-site-sync v$VERSION"
 #
 # Verify configuration
 #
-if [ ! -d ~/.wp-sync-util/ ]
+if [ ! -d $sites_directory ]
 then
-  echo "   ERROR: Configuration directory ~/.wp-sync-util/ not found"
+  echo "   ERROR: Configuration directory $sites_directory not found"
   echo ""
   exit 1
 fi
@@ -161,7 +182,7 @@ then
   # List Sync files
   #
   echo "Available sync configurations:"
-  ls -1 ~/.wp-sync-util/
+  ls -1 $sites_directory
   echo ""
 
 else
